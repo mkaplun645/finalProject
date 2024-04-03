@@ -5,5 +5,5 @@ EASILY_GUESSABLE_PASSWORDS = [
     '123456', 
     'abc123'
     # ...
-    # Add Additional Passwords Here
+    
 ]

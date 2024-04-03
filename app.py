@@ -12,17 +12,6 @@ from sqlalchemy import exc
 import pymysql
 pymysql.install_as_MySQLdb()
 
-# Listings vs. Users -> One to Many Relationship
-    # One User / Many Listings
-        # Listings are going to store the foreign key (user_id)
-
-    # u = User.new(id: 1, firstNAme: "Louis", lastName: "Medina", userType: "Seller")
-    # l = Listing.new(id: 1, title: "My Car", description: "New Car For Sale", userId: 1)
-
-# Full Stack Application
-    # Right Now - Just Flask
-    # In A Full STack Application - React Front End, Flask Back End
-
 #  File Uploads
 
 UPLOAD_FOLDER = "./uploads"
@@ -31,9 +20,6 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# To Do: Create UpdatePassword Form
-    # A visual sketch should be helpful for us
 
 login_manager = LoginManager()
 
@@ -64,11 +50,6 @@ def create_app():
         return user
 
     def get_user(username, password):
-
-        # To Do: We need to check more than whether or not a "username" exists in the database. We need to 
-        # check the passed "password" to make sure that it matches the password for the specified user.
-
-        # Sessions: If encryption is required, we can incorporate the Flask-Login Extension
 
         user = db.session.query(User).filter_by(username=username).one()
 
@@ -129,7 +110,6 @@ def create_app():
         # 4) DELETE -> Destroying Information
 
     # Sellers
-            
     # Method to Show Seller's Listings
 
     def get_my_listings(seller_id):
@@ -197,7 +177,7 @@ def create_app():
         
         form = LoginForm()
 
-        # What we should do when a form is being submitted
+        # What to do when a form is being submitted
         if form.validate_on_submit():
             username=form.username.data
             password=form.password.data
@@ -215,7 +195,7 @@ def create_app():
                 return render_template('login.html', error=error, form=form)
 
 
-        # What we should do if this page is redirected to from "/contact"
+        # What to do if this page is redirected to from "/contact"
         if request.referrer and '/contact' in request.referrer:
             confirmation = 'Thanks for getting in touch with us!' 
 
@@ -329,9 +309,6 @@ def create_app():
     def my_listings(user_id):
         listings = get_my_listings((user_id, )) 
 
-        # In every route, we always have a "request" object implicitly available to us
-        # We can build out conditional behaviors based upon properties of each "request" object
-            # Example => if request.method == "POST"
         if request.referrer and '/new_listing' in request.referrer:
             confirmation = 'New Listing Added!'
 

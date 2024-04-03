@@ -4,16 +4,6 @@ from wtforms import StringField, DecimalField, SelectField, PasswordField, TextA
 from wtforms.validators import DataRequired, Length, Regexp, EqualTo, Email, ValidationError
 from blacklist import EASILY_GUESSABLE_PASSWORDS
 
-# API (Application Programming Interface) - Collection of Endpoints that We Can Interact With
-    # External Apis
-        # Google Maps (GeoLocation)
-        # Amazon (Display Similar Products / Listings)
-            # User types in a Product
-            # That string is sent to the Amazon API, which returns a list of matching products
-            # Render the list of matching products to our application
-    # Internal APIs
-        # Flask Application (Routes)
-
 # Add Custom Password Validator
 def not_easily_guessable_password(form, field):
     if field.data in EASILY_GUESSABLE_PASSWORDS:
