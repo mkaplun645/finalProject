@@ -1,0 +1,2 @@
+cryptography
+email_validator

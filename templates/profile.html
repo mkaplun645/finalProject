@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container text-center">
+        <br>
+        <div>
+            <h2>User Information</h2>    
+        </div>
+        <br>
+        
+        <p>Username: {{current_user.username}}</p>
+        <p>First Name: {{current_user.firstName}}</p>
+        <p>Last Name: {{current_user.lastName}}</p>
+        <p>Email: {{current_user.email}}</p>
+        <br>
+
+        <a href="/password"><button class="btn btn-primary">Change Password</button></a>
+        <br>
+    </div>
+{% endblock %}

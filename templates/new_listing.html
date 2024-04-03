@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <body>
+        <div class="container">
+            <h2>Add New Listing</h2>
+            <form action="/new_listing" class="form form-stacked" method="POST" enctype="multipart/form-data">
+
+                <!-- https://flask-wtf.readthedocs.io/en/0.15.x/quickstart/ -->
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    {{ form.title.label(class="form-label") }}
+                    {{ form.title(class="form-control") }}
+                </div>
+                {% for error in form.title.errors %}
+                        <span style="color:red;">{{ error }}</span>
+                {% endfor %}
+                <div class="form-group">
+                    {{ form.description.label(class="form-label")}}
+                    {{ form.description(class="form-control") }}
+                </div>
+                {% for error in form.description.errors %}
+                        <span style="color:red;">{{ error }}</span>
+                {% endfor %}
+                <div class="form-group">
+                    {{ form.image.label(class="form-label") }}
+                    {{ form.image(class="form-control")}}
+                </div>
+                {% for error in form.image.errors %}
+                        <span style="color:red;">{{ error }}</span>
+                {% endfor %}
+                <div class="form-group">
+                    {{ form.price.label(class="form-label")}}
+                    {{ form.price(class="form-control") }}
+                </div>
+                {% for error in form.price.errors %}
+                        <span style="color:red;">{{ error }}</span>
+                {% endfor %}
+                <br>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </body>
+
+{% endblock %}

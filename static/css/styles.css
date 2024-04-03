@@ -1,0 +1,30 @@
+.container{
+    border: dashed 1px #979797;
+    text-align: center;
+    max-width: fit-content;
+    padding: 20px 50px;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.form-group{
+    padding: 10px;
+}
+
+*:not(.form-stacked) .form-label {
+    width: 8em;
+    display: inline-block;
+}
+
+.form-stacked .form-label {
+    display: block;
+    min-width: 16em;
+}
+
+.form-stacked .form-label {
+    display: block;
+}
+
+.error-message {
+    color: red;
+}

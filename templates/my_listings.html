@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <div class="container text-center">
+        <br>
+        <h2>My Listings</h2>
+
+        {% if confirmation %}
+            <br>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ confirmation }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+        {% endif %} 
+        <div>
+            <a href="/new_listing" class="btn btn-success">Add New Listing</a>
+        </div>
+        <br>
+        <div class="row justify-content-center">
+            {% for listing in listings %}
+                <div class="col-md-4">
+                    <a href="{{ url_for('show_listing', listing_id=listing[0])}}" class="btn btn-primary">
+                        <div class="rd mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h2 class="card-title">{{listing.title}}</h2>
+                                <p class="card-text">Description: {{listing.description}}</p>
+                                <img style="width: 100%;" class="card-text" src="{{ url_for('get_image', filename=listing.image) }}" />
+                                <p class="card-text">Price: {{listing.price}}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

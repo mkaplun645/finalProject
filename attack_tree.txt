@@ -1,0 +1,18 @@
+Hierarchical Representation of Potential Attack Scenarios / Corresponding Steps + Techniques Used By Attackers
+
+Log In Page
+
+    - Authentication
+        - Potential Attack Scenario: A User has previously registered with an easily guessable password, and his / her account is later accessed by an unauthorized user.
+        - Prevention: Data Validations to Check Presence / Length / Inclusion of Special Characters in "Password" Input Field
+    - SQL Injection
+        - Potential Attack Scenario: A User submits malicious SQL instead of typical "Username" / "Password" Values, and the malicious SQL makes it through to corrupt the database. 
+        - Prevention: Parameterized Queries (WTF Forms)
+    - Cross Site Scripting (XSS)
+        - Potential Attack Scenario: An unauthorized agent is able to submit stolen credentials to "Log In" form, and they now have unauthorized access to a User's account.
+        - Prevention: {{ form.hidden_tag() }} (Generates CSRF Token)
+    - Command Injection
+        - Potential Attack Scenario: A User submits malicious commands instead of typical "Username" / "Password" Values, and the malicious commands are applied to the application.
+        - Prevention: Data Validations To Check Presence / Length / Omission of Special Characters in "Username" / "Password" Input Fields  
+    
+    - Additional Potential Attack Scenarios

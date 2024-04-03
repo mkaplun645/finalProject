@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container text-center">
+    <br>
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="rd mb-4 shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title">{{listing.title}}</h2>
+                    <p class="card-text">Description: {{listing.description}}</p>
+                    <img style="width: 100%;" class="card-text" src="{{ url_for('get_image', filename=listing.image) }}" />
+                    <p class="card-text">Price: {{listing.price}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if current_user.user_type == "Buyer" %}
+        <a href="/listings" class="btn btn-secondary">Back To All Listings</a>
+    {% else %}
+        <a href="/{{current_user.get_id()}}/my_listings" class="btn btn-secondary">Back To My Listings</a>
+    {% endif %}
+</div>
+    
+    <br><br>
+{% endblock %}

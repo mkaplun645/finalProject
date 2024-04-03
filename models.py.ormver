@@ -1,0 +1,136 @@
+from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, DECIMAL, ForeignKey,Integer, String, Text
+
+db = SQLAlchemy()
+
+class User(db.Model):
+    __tablename__ = "users"
+    id             = Column(Integer, primary_key=True, autoincrement=True)
+    username       = Column(String(32), nullable=False, unique=True)
+    password_hash  = Column(String(255))
+    first_name     = Column(String(32), nullable=False)
+    last_name      = Column(String(32), nullable=False)
+    email          = Column(String(45), nullable=False, unique = True)
+    user_type      = Column(String(45), nullable=False)
+
+    @property
+    def is_active(self):
+        return True
+    @property
+    def is_authenticated(self):
+        return True
+    @property
+    def is_anonymous(self):
+        return False
+    def get_id(self):
+        return self.id
+
+class Listing (db.Model):
+    __tablename__ =  "listings"
+    id          = Column(Integer, primary_key=True, autoincrement=True)
+    title       = Column(String(255), nullable=False)
+    description = Column(Text)
+    user_id     = Column(Integer, ForeignKey(User.id))
+    image       = Column(String(255))
+    price       = Column(DECIMAL(10, 2))
+    
+class Contact:
+    __tablename__ = "contacts"
+    id               = Column(Integer, primary_key=True, autoincrement=True)
+    first_name       = Column(String(45), nullable=False)
+    last_name        = Column(String(45), nullable=False)
+    email            = Column(String(45), nullable=False)
+    message          = Column(String(255))
+
+    # We need to update to establish association with ONE user
+'''
+    *** Listing
+
+CREATE TABLE `listings` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `description` text,
+  `user_id` int DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `listings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+    def __init__(self, row) -> None:
+        self._id = row[0]
+        self.title = row[1]
+        self.description = row[2]
+        self.user_id = row[3]
+        self.image = row[4]
+        self.price = row[5]
+'''
+'''
+    *** User
+    CREATE TABLE `users` (
+        `id` int NOT NULL AUTO_INCREMENT,
+        `username` varchar(32) NOT NULL,
+        `password_hash` varchar(255) DEFAULT NULL,
+        `first_name` varchar(32) NOT NULL,
+        `last_name` varchar(32) NOT NULL,
+        `email` varchar(45) NOT NULL,
+        `user_type` varchar(45) NOT NULL,
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `username_UNIQUE` (`username`),
+        UNIQUE KEY `email_UNIQUE` (`email`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+    # Two Types of Users -> Buyers / Sellers
+
+    # We need to update to establish association with MANY listings
+
+    def __init__(self, row) -> None:
+        self._id = row[0]
+        # username, firstName, lastName, email => These make our attributes
+        # accessible for each new User object that we create
+        self.username = row[1]
+        self.first_name = row[3]
+        self.last_name = row[4]
+        self.user_type = row[5]
+        self.email = row[6]
+        self.last_active = datetime.utcnow()
+
+
+        # Flask Login
+        self.is_authenticated = True
+        self.is_active = True
+        self.is_anonymous = False
+
+    def get_id(self):
+        return self._id
+
+    def get_listings(self):
+        #listings = get_my_listings((self._id, ))
+        #print(listings)
+        #return listings
+        pass
+'''
+
+
+'''
+    *** Contact
+    CREATE TABLE `contacts` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `first_name` varchar(45) NOT NULL,
+    `last_name` varchar(45) NOT NULL,
+    `email` varchar(45) NOT NULL,
+    `message` varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+    def __init__(self, row) -> None:
+        self._id = row[0]
+        self.first_name = row[1]
+        self.last_name = row[2]
+        self.email = row[3]
+        self.message = row[4]
+'''

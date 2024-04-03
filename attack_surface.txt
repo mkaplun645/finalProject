@@ -1,0 +1,46 @@
+Sum of All Possible Entry Points / Vulnerabilities
+
+Error Handling
+
+    - Improper Error Handling Could Give Malicious Users More Visiblity
+    of Underlying Application Structure
+
+
+Endpoints / Routes
+
+    - Authorization
+        - Certain Routes Should Only Be Accessed By Authorized Users
+            - Home Page ("/")
+            - Log Out ("/logout")
+            - Update Password ("/password")
+            - Profile ("/profile")
+            - My Listings ("/<user_id>/my_listings")
+            - Show Listing ("/listings/<listing_id>")
+            - Create New Listing ("/new_listing")
+            - Show All Listings ("/listings")
+
+Form Inputs / User Input
+    
+    External
+
+        - Contact
+            - SQL Injection
+            - Cross Site Scripting (XSS)
+            - Command Injection
+    
+    Internal
+
+        - Log In / Sign Up
+            - Authentication
+            - SQL Injection
+            - Cross Site Scripting (XSS)
+            - Command Injection
+        - Add New Listing
+            - SQL Injection
+            - Cross Site Scripting (XSS)
+            - Command Injection
+            - Corrupt File Uploads
+        - Update Password
+            - SQL Injection
+            - Cross Site Scripting (XSS)
+            - Command Injection
