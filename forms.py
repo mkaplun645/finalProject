@@ -2,12 +2,6 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, DecimalField, SelectField, PasswordField, TextAreaField
 from wtforms.validators import DataRequired, Length, Regexp, EqualTo, Email, ValidationError
-from blacklist import EASILY_GUESSABLE_PASSWORDS
-
-# Add Custom Password Validator
-def not_easily_guessable_password(form, field):
-    if field.data in EASILY_GUESSABLE_PASSWORDS:
-        raise ValidationError('Easily Guessable Password.')
     
 # Add Special Character Validator (Command Injection Protection)
 def disallowed_characters(form, field):
@@ -25,12 +19,7 @@ class NewListingForm(FlaskForm):
 class NewUserForm(FlaskForm):
     user_type = SelectField('Buyer or Seller?', choices=['Buyer', 'Seller'], validators=[DataRequired()])
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=10), disallowed_characters])
-    password = PasswordField('Password', validators=[
-        DataRequired(), 
-        Length(min=5, message="Password must be at least 5 characters long."),
-        Regexp(regex=r'^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$', message="Password must contain at least one special character."),
-        not_easily_guessable_password
-    ])
+    password = PasswordField('Password')
     confirm_password= PasswordField('Confirm Password', validators=[
         DataRequired(), 
         EqualTo('password', message="Passwords Must Match")
@@ -42,9 +31,7 @@ class NewUserForm(FlaskForm):
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), disallowed_characters])
     password = PasswordField('Password', validators=[
-        DataRequired(),
-        Length(min=5, message="Password must be at least 5 characters long."),
-        Regexp(regex=r'^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$', message="Password must contain at least one special character.")
+        DataRequired()
     ])
 
 class ContactForm(FlaskForm):
@@ -55,12 +42,8 @@ class ContactForm(FlaskForm):
 
 class NewPasswordForm(FlaskForm):
     old_password = PasswordField('Previous Password', validators=[
-        DataRequired(),
-        Length(min=5, message="Password must be at least 5 characters long."),
-        Regexp(regex=r'^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$', message="Password must contain at least one special character.")
+        DataRequired()
     ])
     new_password = PasswordField('New Password', validators=[
-        DataRequired(), 
-        Length(min=5, message="Password must be at least 5 characters long."),
-        Regexp(regex=r'^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$', message="Password must contain at least one special character.")
+        DataRequired()
     ])

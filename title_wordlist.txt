@@ -1,0 +1,8 @@
+Car
+House
+Computer
+Phone
+Tablet
+Book
+Chair
+Laptop

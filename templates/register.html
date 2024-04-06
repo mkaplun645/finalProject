@@ -10,6 +10,8 @@
     <body>
         <div class="container">
             <h2>Register</h2>
+
+            <span style="color:red;">{{ error_message }}</span>
             
             <form action="/register" class="form form-stacked" method="POST">
                 
@@ -26,7 +28,6 @@
                 {% for error in form.username.errors %}
                     <span style="color:red;">{{ error }}</span>
                 {% endfor %}
-                <span style="color:red;">{{ error_message }}</span>
                 <div class="form-group">
                     {{ form.password.label(class="form-label") }}
                     {{ form.password(class="form-control") }}

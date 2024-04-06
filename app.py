@@ -8,6 +8,18 @@ from forms import NewListingForm, NewUserForm, LoginForm, ContactForm, NewPasswo
 from models import User, Listing, Contact, db
 from datetime import datetime, timedelta
 from sqlalchemy import exc
+from password_strength import PasswordPolicy
+
+# Difficult for a password with the following
+# policy restrictions in place to be easily
+# guessable
+policy = PasswordPolicy.from_names(
+    length=8,
+    uppercase=2,
+    numbers=2,
+    special=2,
+    nonletters=2
+)
 
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -51,30 +63,35 @@ def create_app():
 
     def get_user(username, password):
 
-        user = db.session.query(User).filter_by(username=username).one()
+        try: 
+            user = db.session.query(User).filter_by(username=username).one()
 
-        if user:
-            # Pull the "password_hash" from the DB for the found User
-            password_hash = user.password_hash
-            # Use "check_password_hash" to compare the plain-text password submitted with the 
-            # Login Form (password) with the hashed password stored in the DB (password_hash)
-            is_valid = check_password_hash(password_hash, password)
-            #  If "is_valid" is True, we return the User
-            if is_valid:
-                return user
+            if user:
+                # Pull the "password_hash" from the DB for the found User
+                password_hash = user.password_hash
+                # Use "check_password_hash" to compare the plain-text password submitted with the 
+                # Login Form (password) with the hashed password stored in the DB (password_hash)
+                is_valid = check_password_hash(password_hash, password)
+                #  If "is_valid" is True, we return the User
+                if is_valid:
+                    return user         
+            else:
+                return False
+            
+        except exc.SQLAlchemyError as e:
+            return False
         
-        # cnx.close()
 
     def handle_update_password(username, new_password, old_password):
-        
-        # With "oldPassword", we've got to verify that this matches the User's
-        # current password before issuing a change to the DB.
 
         user = db.session.query(User).filter_by(username=username).one()
         password_hash = user.password_hash
         is_valid = check_password_hash(password_hash, old_password)
+        is_complex = policy.test(new_password)
 
-        if is_valid:
+        # If old_password matches the current User's password
+        # AND is_complex is an empty List
+        if is_valid and is_complex == []:
 
             hashed_new_password = generate_password_hash(new_password)
             user.password_hash = hashed_new_password
@@ -82,32 +99,46 @@ def create_app():
             db.session.add(user)
             db.session.commit()
 
+            # Returns User Object (Instance of the User Class)
             return user
+        
+        # If is_complex is NOT an empty List
+        elif len(is_complex) != 0:
+
+            print(is_complex)
+
+            # Returns is_complex List
+            return is_complex
+        
+        # If check_password_hash returns False
+        elif is_valid != True:
+
+            # Returns False (Boolean)
+            return False
 
     def handle_add_user(username, password, first_name, last_name, user_type, email):
 
-        # Converts Plain Text Form Value for "password" to an Encrypted Hash + Salt
-        encrypted_password = generate_password_hash(password)
+        is_valid = policy.test(password)
 
-        new_user = User(
-            username=username,
-            password_hash=encrypted_password,
-            first_name=first_name,
-            last_name=last_name,
-            user_type=user_type,
-            email=email
-        )
+        if is_valid == []:
+            # Converts Plain Text Form Value for "password" to an Encrypted Hash + Salt
+            encrypted_password = generate_password_hash(password)
 
-        db.session.add(new_user)
-        db.session.commit()
+            new_user = User(
+                username=username,
+                password_hash=encrypted_password,
+                first_name=first_name,
+                last_name=last_name,
+                user_type=user_type,
+                email=email
+            )
 
-        print("User Created Successfully")
+            db.session.add(new_user)
+            db.session.commit()
 
-    # Routes -> Endpoints That Can Receive Any Kind of HTTP Verb:
-        # 1) GET -> Retrieving Information
-        # 2) POST -> Sending Information
-        # 3) PATCH / PUT -> Updating Information
-        # 4) DELETE -> Destroying Information
+            print("User Created Successfully")
+        else:
+            return is_valid
 
     # Sellers
     # Method to Show Seller's Listings
@@ -183,7 +214,6 @@ def create_app():
             password=form.password.data
             print(f"trying to log in as {username}")
 
-
             retrievedUser = get_user(username, password)
             if retrievedUser:
                 print(f"logged in as {username}")
@@ -223,13 +253,21 @@ def create_app():
 
             try:
             
-                handle_add_user(username, password, first_name, last_name, user_type, email)
+                errors = handle_add_user(username, password, first_name, last_name, user_type, email)
 
-                retrievedUser = get_user(username, password)
+                if not errors:
 
-                login_user(retrievedUser)
-                
-                return redirect(url_for('index'))
+                    retrievedUser = get_user(username, password)
+
+                    login_user(retrievedUser)
+                    
+                    return redirect(url_for('index'))
+            
+                else:
+
+                    error_message = "Password must be at least 8 characters and include 2 uppercase letters, 2 numbers,  2 special characters."
+
+                    return render_template("register.html", form=form, error_message=error_message)
             
             except exc.SQLAlchemyError as e:
 
@@ -261,24 +299,25 @@ def create_app():
 
             updated_user = handle_update_password(username, newPassword, oldPassword)
 
-            if updated_user:
-                confirmation_message = "Password Updated!"
+            # handle_update_password returns an instance of the User class
+            if isinstance(updated_user, User):
+                confirmation_message = "Password Updated Successfully!"
                 return render_template("home.html", confirmation_message=confirmation_message)
-            else:
+            # handle_update_password returns an instance of the List class
+            elif isinstance(updated_user, list):
+                error_message = "New password must be at least 8 characters and include 2 uppercase letters, 2 numbers,  2 special characters."
+                return render_template("password.html", error_message=error_message, form=form)
+            # handle_update_password returns an instance of the Boolean class
+            elif isinstance(updated_user, bool):
                 error_message = "Old Password Incorrect"
-                return render_template("password.html", error_message=error_message,  form=form)
+                return render_template("password.html", error_message=error_message, form=form)
 
-        
         return render_template("password.html", form=form)    
 
     @app.route("/feedback") 
     @login_required
     def feedback():
         return render_template("feedback.html")
-
-    # Contact Page
-        # 1) Store Information
-        # 2) Configure Mailer (*) (https://pythonhosted.org/Flask-Mail/)
 
     @app.route('/contact', methods=['GET', 'POST']) 
     def contact():
@@ -329,6 +368,7 @@ def create_app():
         
         return render_template('listing.html', listing=listing)
 
+    # http://127.0.0.1:5000/new_listing
     @app.route("/new_listing", methods=['GET', 'POST'])
     @login_required
     def add_new_listing():
@@ -336,8 +376,6 @@ def create_app():
         form = NewListingForm()
         
         user_id = current_user.id
-
-        print(user_id)
 
         if form.validate_on_submit():
             title=form.title.data
